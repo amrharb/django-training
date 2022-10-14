@@ -1,0 +1,2 @@
+# django-training
+Backend Tasks
