@@ -73,7 +73,7 @@
 
 - list(Album.objects.all().filter(artist=Artist.objects.all().get(Stage_name='Hamza Namira')))
 - [<Album: Insan>, <Album: Fakra>, <Album: ala allah>]
-- 
+
 ## list down all albums ordered by cost then by name
 
 - Album.objects.all().order_by('cost','name')
