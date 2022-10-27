@@ -18,17 +18,21 @@ class SongAdmin(admin.ModelAdmin):
     class Meta:
         fields='__all__'
 
+    def delete_model(self, request, Song):
+        if Song.album.songs.count()>1:
+            Song.delete()
+        else:
+            self.message_user(request, 
+                "you can't delete all songs of an album",
+                messages.ERROR
+              )  
+              
     def delete_queryset(self, request, queryset):
-        albums_counter = {}
         has_error = False
         for song in queryset:
             album = song.album 
-            if not album.id in albums_counter:
-                albums_counter[album.id] = album.songs.count()
-            
-            if albums_counter[album.id]>1:
+            if album.songs.count()>1:
                 song.delete()
-                albums_counter[album.id]-=1
             else :
                 has_error = True
 
@@ -36,4 +40,4 @@ class SongAdmin(admin.ModelAdmin):
               self.message_user(request, 
                 "you can't delete all songs of an album",
                 messages.ERROR
-              )    
+              )  
