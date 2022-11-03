@@ -13,4 +13,5 @@ class ArtistsView(APIView):
     def post(self,request):
         serializer = ArtistSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        Artist.objects.create(serializer)
         return Response(serializer.validated_data)
