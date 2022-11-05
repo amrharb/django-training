@@ -21,9 +21,9 @@ class Album(TimeStampedModel):
 class Song(models.Model):
     album = models.ForeignKey(Album, related_name="songs",on_delete=models.CASCADE)
     name = models.CharField(max_length=255, blank=True)
-    image = models.ImageField(upload_to='static/images')
+    image = models.ImageField(upload_to='static/images',blank=True)
     image_thumbnail = ProcessedImageField(upload_to='static/images', blank=True, processors=[ResizeToFill(100, 50)], format='JPEG',options={'quality': 60})
-    audio = models.FileField(upload_to='static/audio', null=True,validators=[FileExtensionValidator(allowed_extensions=['mp3', 'wav'])])
+    audio = models.FileField(upload_to='static/audio', null=True,blank=True,validators=[FileExtensionValidator(allowed_extensions=['mp3', 'wav'])])
 
     def save(self):
         if not self.name:

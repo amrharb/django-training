@@ -5,12 +5,13 @@ from rest_framework import status
 from .serializers import ArtistSerializer
 from .models import Artist
 class ArtistsView(APIView):
-    def get(self, request):
+    def get(self,request):
         artists = Artist.objects.all()
         serializer = ArtistSerializer(artists, many=True)
         return Response(data=serializer.data,status=status.HTTP_200_OK)
 
-    def post(self,request):
+    def post(self, request):
         serializer = ArtistSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        return Response(serializer.validated_data)
+        Artist.objects.create(serializer)
+        return Response(data=serializer.validated_data,status=status.HTTP_201_CREATED)
