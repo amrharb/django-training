@@ -8,6 +8,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = User
         fields = ['email','username','password1','password2']
 
+    username = serializers.CharField(write_only=True)
     email = serializers.EmailField(validators=[UniqueValidator(queryset=User.objects.all())])
     password1 = serializers.CharField(write_only=True)
     password2 = serializers.CharField(write_only=True)
@@ -20,10 +21,11 @@ class RegisterSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        user = User.objects.create(
+        user = User(
             email=validated_data['email'],
-            username=validated_data['username'],
-            password=validated_data['password1']
+            username=validated_data['username']
         )
+        user.set_password(validated_data['password1'])
+        user.set_password(validated_data['password2'])
+        user.save()
         return user
-    
