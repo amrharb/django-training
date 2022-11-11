@@ -17,4 +17,4 @@ class ArtistsView(APIView):
         serializer = ArtistSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(data=serializer.validated_data,status=status.HTTP_201_CREATED)
+        return Response(data=serializer.data,status=status.HTTP_201_CREATED)

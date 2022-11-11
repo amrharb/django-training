@@ -4,13 +4,20 @@ from model_utils.models import TimeStampedModel
 from imagekit.processors import ResizeToFill
 from imagekit.models import ProcessedImageField
 from django.core.validators import FileExtensionValidator
+from django import forms
+from artists.models import Artist
+
+class ApprovedAlbumManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(approved=True)
+
 class Album(TimeStampedModel):
     artist = models.ForeignKey(Artist, related_name="albums", on_delete=models.CASCADE)
     name = models.CharField(max_length=255,default="New Album")
     release_at = models.DateTimeField()
     cost = models.DecimalField(max_digits=8, decimal_places=2)
     approved = models.BooleanField(default=False, help_text="Approve the album if its name is not explicit")
-
+    approved_album = ApprovedAlbumManager()
     def __str__(self):
         return self.name
 
