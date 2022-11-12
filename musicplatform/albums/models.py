@@ -6,6 +6,7 @@ from imagekit.models import ProcessedImageField
 from django.core.validators import FileExtensionValidator
 from django import forms
 from artists.models import Artist
+from .tasks import send_artist_a_congratulation_email
 
 class ApprovedAlbumManager(models.Manager):
     def get_queryset(self):
@@ -20,7 +21,12 @@ class Album(TimeStampedModel):
     approved_album = ApprovedAlbumManager()
     def __str__(self):
         return self.name
-
+    
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            send_artist_a_congratulation_email.delay(self.artist.user.id, self.name, self.release_datetime, self.cost)
+        super(Album, self).save(*args, **kwargs)
+    
     class Meta:
         db_table = "albums"
 
@@ -32,10 +38,10 @@ class Song(models.Model):
     image_thumbnail = ProcessedImageField(upload_to='static/images', blank=True, processors=[ResizeToFill(100, 50)], format='JPEG',options={'quality': 60})
     audio = models.FileField(upload_to='static/audio', null=True,blank=True,validators=[FileExtensionValidator(allowed_extensions=['mp3', 'wav'])])
 
-    def save(self):
+    def save(self,*args, **kwargs):
         if not self.name:
          self.name = self.album.name
-        super(Song, self).save()
+        super(Song, self).save(*args, **kwargs)
     
     def __str__(self):
         return self.name

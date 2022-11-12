@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from pathlib import Path
+from celery.schedules import crontab
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -44,6 +45,7 @@ INSTALLED_APPS = [
     'knox',
     'imagekit',
     'django_filters',
+    'django_celery_beat',
     'artists',
     'albums',
     'authentication',
@@ -141,4 +143,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': ('knox.auth.TokenAuthentication',),
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+}
+
+CELERY_CONF_BROKER_URL = "redis://127.0.0.1:6379/0"
+CELERY_CONF_BEAT_SCHEDULE = {
+    'send_artist_a_reminder_email': {
+        'task': 'albums.tasks.send_artist_a_reminder_email',
+        'schedule': crontab(minute=0, hour='*/24')
+    },
 }
